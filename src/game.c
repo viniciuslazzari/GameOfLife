@@ -1,26 +1,48 @@
 #include "game.h"
 
-void initGame(Cell grid[MAX][MAX]){
-    srand(time(NULL));
+const char* gameFile = "game.txt";
 
-    for (int i = 0; i < MAX; i++){
-        for (int j = 0; j < MAX; j++){
-            grid[i][j].position = (Vector2) { j * CELL_SIZE + MARGIN, i * CELL_SIZE + MARGIN };
+Cell** createGrid(int size){    
+    Cell** grid = (Cell **)malloc(size * sizeof(Cell *)); 
 
-            int r = rand() % 20;
+    for (int i = 0; i < size; i++) {
+        grid[i] = (Cell *)malloc(size * sizeof(Cell));
+    }
+
+    return grid;
+}
+
+Cell** initGame(int* size){
+    char temp;
+    FILE* file = fopen(gameFile, "r");
+
+    fscanf(file, "%d\n", size);
+
+    Cell** grid = createGrid(*size); 
+
+    float cellSize = UTIL_GRID_SPACE / *size;
+
+    for (int i = 0; i < *size; i++){
+        for (int j = 0; j < *size; j++){
+            grid[i][j].position = (Vector2) { j * cellSize + MARGIN, i * cellSize + MARGIN };
+            grid[i][j].neighborhoods = 0;
+
+            fscanf(file, "%c ", &temp);
 
             grid[i][j].alive = 0;
 
-            if (r % 5 == 0) grid[i][j].alive = 1;
-            
-            grid[i][j].neighborhoods = 0;
+            if (temp == 'X') grid[i][j].alive = 1;
         }
     }
+
+    // printf("%d\n\n\n", grid[1][1].alive);
+
+    return grid;
 }
 
-void updateCellsStates(Cell grid[MAX][MAX]){
-    for (int i = 0; i < MAX; i++){
-        for (int j = 0; j < MAX; j++){
+void updateCellsStates(Cell** grid, int size){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
             if (grid[i][j].alive == 1 && (grid[i][j].neighborhoods == 2 || grid[i][j].neighborhoods == 3)){
                 grid[i][j].alive = 1;
                 continue;
@@ -36,17 +58,17 @@ void updateCellsStates(Cell grid[MAX][MAX]){
     }
 }
 
-void updateCellNeighborhoods(Cell grid[MAX][MAX]){
+void updateCellNeighborhoods(Cell** grid, int size){
     int sum;
 
-    for (int i = 0; i < MAX; i++){
-        for (int j = 0; j < MAX; j++){
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
             sum = 0;
 
             for (int x = i - 1; x <= i + 1; x++){
                 for (int y = j - 1; y <= j + 1; y++){
                     if (x == i && y == j) continue;
-                    if (x < 0 || x > MAX - 1 || y < 0 || y > MAX - 1) continue;
+                    if (x < 0 || x > size - 1 || y < 0 || y > size - 1) continue;
 
                     sum += grid[x][y].alive;
                 }
@@ -57,19 +79,21 @@ void updateCellNeighborhoods(Cell grid[MAX][MAX]){
     }
 }
 
-void drawGrid(Cell grid[MAX][MAX]){
-    for (int i = 0; i < MAX; i++){
-        for (int j = 0; j < MAX; j++)
+void drawGrid(Cell** grid, int size){
+    float cellSize = UTIL_GRID_SPACE / size;
+
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++)
         {
-            if (grid[i][j].alive == 1) DrawRectangle(grid[i][j].position.x, grid[i][j].position.y, CELL_SIZE, CELL_SIZE, WHITE);
+            if (grid[i][j].alive == 1) DrawRectangle(grid[i][j].position.x, grid[i][j].position.y, cellSize, cellSize, WHITE);
         }
     }
 }
 
-void drawGame(Cell grid[MAX][MAX]){
-    updateCellNeighborhoods(grid);
+void drawGame(Cell** grid, int size){
+    updateCellNeighborhoods(grid, size);
 
-    updateCellsStates(grid);
+    updateCellsStates(grid, size);
 
-    drawGrid(grid);
+    drawGrid(grid, size);
 };

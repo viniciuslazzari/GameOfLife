@@ -3,9 +3,10 @@
 const char* iconPath = "assets/icon.png";
 
 int main(void){
-    Cell grid[MAX][MAX];
+    int size;
+    Cell** grid;
 
-    initGame(grid);
+    grid = initGame(&size);
 
     Image windowsIcon = LoadImage(iconPath);
 
@@ -13,7 +14,7 @@ int main(void){
 
     SetWindowIcon(windowsIcon);
 
-    SetTargetFPS(5);
+    SetTargetFPS(10);
 
     while (!WindowShouldClose())
     {
@@ -21,7 +22,7 @@ int main(void){
 
         ClearBackground(BLACK);
 
-        drawGame(grid);
+        drawGame(grid, size);
 
         EndDrawing();
     }
