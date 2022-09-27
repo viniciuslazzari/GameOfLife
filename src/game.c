@@ -35,8 +35,6 @@ Cell** initGame(int* size){
         }
     }
 
-    // printf("%d\n\n\n", grid[1][1].alive);
-
     return grid;
 }
 
