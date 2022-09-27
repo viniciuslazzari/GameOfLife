@@ -14,7 +14,7 @@
 typedef struct Cell {
     Vector2 position;
     int alive;
-    int neighborhoods;
+    int neighbors;
 } Cell;
 
 Cell** initGame(int* size);

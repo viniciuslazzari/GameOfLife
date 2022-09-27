@@ -25,7 +25,7 @@ Cell** initGame(int* size){
     for (int i = 0; i < *size; i++){
         for (int j = 0; j < *size; j++){
             grid[i][j].position = (Vector2) { j * cellSize + MARGIN, i * cellSize + MARGIN };
-            grid[i][j].neighborhoods = 0;
+            grid[i][j].neighbors = 0;
 
             fscanf(file, "%c ", &temp);
 
@@ -41,12 +41,12 @@ Cell** initGame(int* size){
 void updateCellsStates(Cell** grid, int size){
     for (int i = 0; i < size; i++){
         for (int j = 0; j < size; j++){
-            if (grid[i][j].alive == 1 && (grid[i][j].neighborhoods == 2 || grid[i][j].neighborhoods == 3)){
+            if (grid[i][j].alive == 1 && (grid[i][j].neighbors == 2 || grid[i][j].neighbors == 3)){
                 grid[i][j].alive = 1;
                 continue;
             }
 
-            if (grid[i][j].alive == 0 && grid[i][j].neighborhoods == 3){
+            if (grid[i][j].alive == 0 && grid[i][j].neighbors == 3){
                 grid[i][j].alive = 1;
                 continue;
             }
@@ -56,7 +56,7 @@ void updateCellsStates(Cell** grid, int size){
     }
 }
 
-void updateCellNeighborhoods(Cell** grid, int size){
+void updateCellNeighbors(Cell** grid, int size){
     int sum;
 
     for (int i = 0; i < size; i++){
@@ -72,7 +72,7 @@ void updateCellNeighborhoods(Cell** grid, int size){
                 }
             }
 
-            grid[i][j].neighborhoods = sum;
+            grid[i][j].neighbors = sum;
         }
     }
 }
@@ -89,7 +89,7 @@ void drawGrid(Cell** grid, int size){
 }
 
 void drawGame(Cell** grid, int size){
-    updateCellNeighborhoods(grid, size);
+    updateCellNeighbors(grid, size);
 
     updateCellsStates(grid, size);
 
